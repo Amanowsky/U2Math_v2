@@ -1,4 +1,5 @@
 #include "TC.h"
+#include <chrono>
 /// <summary>
 /// Konstruktor domyślny
 /// </summary>
@@ -290,6 +291,7 @@ TC TC::add(TC number1, TC number2){
         tempLS -= 8;
         index2++;
     }
+    auto start = std::chrono::steady_clock::now();
     if (number1._number[0] > 127 && number2._number[0] < 127 && mostSignificantNumber1 >= 0) {
         negateIntegerBits   (number1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
@@ -309,7 +311,9 @@ TC TC::add(TC number1, TC number2){
         vectorAdd(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
     } 
-
+       auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "elapsed time2: " << elapsed_seconds.count() << "s\n" << std::endl;
     if(newTC._number[1] > 127 && newTC._number[0] > 127){
             newTC._number.erase(newTC._number.begin());
     } else if(newTC._number[1] < 128 && newTC._number[0] == 0) {
@@ -707,7 +711,7 @@ void TC_test::setAutoTest()
  // Mul test 3
     number_a = {0b00000000,0b11001000};
     number_b = {0b11111111,0b11111110};
-    number_ab = {0b11111110,0b01110000};
+    number_ab = {0b11111111,0b11111111,0b11111110,0b01110000};
     TCnumber_a = TC(number_a,0);
     TCnumber_b = TC(number_b,0);
     TCnumber_ab = TC(number_ab,0);
@@ -726,7 +730,7 @@ void TC_test::isPassed(TC a, TC b, TC c,char mark, std::string text){
             break;
         case '*':
             if(TC::mul(a,b)==c) std::cout << "Test " << text << " - Passed" << std::endl;
-            else std::cout << "Test " << text << " - Failed" << std::endl; 
+            else std::cout << "Test " << text << " - Failed - "<< TC::printTC(TC::mul(a,b)) << std::endl; 
             break;
         case '/':
             std::cout << "Not implemented!" << std::endl;
