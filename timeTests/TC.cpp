@@ -653,6 +653,22 @@ TC TC::div(TC number1, TC number2) {
          negateBits(newTC2);
          }  
          newTC2._position = leastSignificant - (8 * comma) - 8;
+         clock_t end_time = clock();
+    double elapsed = double(end_time - start_time) / CLOCKS_PER_SEC;
+    double elapsed_global = double(end_time - start_time_global) / CLOCKS_PER_SEC;
+
+    std::fstream wyniki_div("wyniki_div.txt", std::ios::app);
+    if (wyniki_div.is_open())
+    {
+        wyniki_div << elapsed << std::endl;
+        wyniki_div.close();
+    }
+    std::fstream wyniki_div_global("wyniki_div_global.txt", std::ios::app);
+    if (wyniki_div_global.is_open())
+    {
+        wyniki_div_global << elapsed_global << std::endl;
+        wyniki_div_global.close();
+    }
          return newTC2;  
     }
     }

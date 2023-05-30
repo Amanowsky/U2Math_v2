@@ -15,7 +15,7 @@ int main()
     unsigned int sizeKb;
     std::cin >> sizeKb;
 
-    for (int i = 0; i < sizeKb * 1024 * 1024; i += 8)
+    for (int i = 0; i < sizeKb * 1024 ;i += 8)
     {
         vec.push_back((rand() % 255) + 1);
     }
@@ -25,7 +25,7 @@ int main()
         vec2.push_back((rand() % 255) + 1);
     }
 
-    for (int i = 0; i < (sizeKb - 1) * 1024; i += 8)
+    for (int i = 0; i < 10 * 1024; i += 8)
     {
         vec3.push_back((rand() % 255) + 1);
     }
@@ -36,7 +36,7 @@ int main()
 
     for (int i = 0; i < RESEARCH; i++)
     {
-        TC::mul(testVector,testVector2);
+        TC::div(testVector,testVector3);
     }
 
 
