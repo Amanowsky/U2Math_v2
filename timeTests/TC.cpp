@@ -1,37 +1,10 @@
 #include "TC.h"
-/// <summary>
-/// Konstruktor domyślny
-/// </summary>
+
 TC::TC() { 
     _number.push_back(0);
     _position = 0;
 }
 
-
-bool TC::isNumberZero(TC number){
-    for (const auto& el : number._number)
-    {  
-        if(el != 0) return false;
-    }
-    return true;
-}
-
-bool TC::isNumberZero(vector<uint8_t> number){
-    for (const auto& el : number)
-    {  
-        if(el != 0) return false;
-    }
-    return true;
-}
-
-vector<uint8_t> TC::getNumber(TC number){
-    return number._number;
-}
-/// <summary>
-/// Konstruktor
-/// </summary>
-/// <param name="number">Nasza liczba</param>
-/// <param name="position">Pozycja najmniej znaczącego bitu</param>
 TC::TC(vector<uint8_t>& number, int position) {
 
     if (position % 8 != 0) {
@@ -74,32 +47,40 @@ TC::TC(vector<uint8_t>& number, int position) {
         _position = position;
     }
 }
-/// <summary>
-/// Przesunięcie bajta o n pozycji w prawo
-/// </summary>
-/// <param name="number">Liczba do przesunięcia</param>
-/// <param name="n">Określa o ile przesuniemy</param>
-/// <returns></returns>
-uint8_t TC::rightShift(const uint8_t& number, int n)
-{
-    return number >> n; //przeuniecie liczby o n miejsc w prawo
-}
-/// <summary>
-/// Przesunięcie bajta o n pozycji w lewo
-/// </summary>
-/// <param name="number">Liczba do przesunięcia</param>
-/// <param name="n">Określa o ile przesuniemy</param>
-/// <returns></returns>
-uint8_t TC::leftShift(const uint8_t& number, int n)
-{
-    return number << n; //przeuniecie liczby o n miejsc w lewo
+
+bool TC::isNumberZero(TC number){
+    for (const auto& el : number._number)
+    {  
+        if(el != 0) return false;
+    }
+    return true;
 }
 
-/// <summary>
-/// W przypadku ujemnej liczby w niektórych sytuacjach zamienia bity z 0 na 1
-/// </summary>
-/// <param name="byt">Liczba do zamiany</param>
-/// <param name="n">Liczba 1 do dopisania</param>
+bool TC::isNumberZero(vector<uint8_t> number){
+    for (const auto& el : number)
+    {  
+        if(el != 0) return false;
+    }
+    return true;
+}
+
+vector<uint8_t> TC::getNumber(TC number){
+    return number._number;
+}
+
+
+
+uint8_t TC::rightShift(const uint8_t& number, int n)
+{
+    return number >> n; 
+}
+
+uint8_t TC::leftShift(const uint8_t& number, int n)
+{
+    return number << n;
+}
+
+
 void TC::setNegative(uint8_t& number, int n) 
 {
     switch (n) {
@@ -129,15 +110,12 @@ void TC::setNegative(uint8_t& number, int n)
 
 
 
-/// <summary>
-/// Wypisuje naszą liczbę w U2
-/// </summary>
-/// <param name="number">Liczba do wypisania</param>
+
 std::string TC::printTC(TC number) 
 {
     std::string numb = "";
     int mostSignificant = (number._position + number._number.size() * 8);
-    if (number._position == 0) { //dla pozycji nieujemnych
+    if (number._position == 0) { 
         for (int i = 0; i < number._number.size(); i++) {
             for (int j = 7; j >= 0; j--) {
                 numb += std::to_string(((number._number[i] >> j) & 1));
@@ -220,7 +198,7 @@ void TC::negateBits(vector<uint8_t>& number){
     vectorAdd(&number[number.size() - 1], &one, 0);
 }
 
-void TC::negateBitsTC(TC& number){
+void TC::negateBits(TC& number){
 int mostSignificant = number._position - 1 + (number._number.size() * 8);  
 if(mostSignificant > 0){
         unsigned int size = number._number.size() - 1;
@@ -292,20 +270,19 @@ TC TC::add(TC number1, TC number2){
     }
     clock_t start_time = clock();
     if (number1._number[0] > 127 && number2._number[0] < 127 && mostSignificantNumber1 >= 0) {
-        negateBitsTC(number1);
+        negateBits(number1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
         vectorSub(&newTC._number[index1], &number1._number[0], number1._number.size()-1);        
     } else if(number1._number[0] < 127 && number2._number[0] > 127){
-        negateBitsTC(number2);
+        negateBits(number2);
         vectorAdd(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
         vectorSub(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
-       // negateBits(newTC);
     } else if(number1._number[0] > 127 && number2._number[0] > 127){
-        negateBitsTC(number1);
-        negateBitsTC(number2);
+        negateBits(number1);
+        negateBits(number2);
         vectorAdd(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
-        negateBitsTC(newTC);
+        negateBits(newTC);
     } else {
         vectorAdd(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
@@ -391,17 +368,17 @@ TC TC::add(TC number1, TC number2){
     }
     clock_t start_time = clock();
     if (number1._number[0] > 127 && number2._number[0] < 127) {
-        negateBitsTC(number1);
+        negateBits(number1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
         vectorAdd(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
-        negateBitsTC(newTC);
+        negateBits(newTC);
     } else if(number1._number[0] < 127 && number2._number[0] > 127){
-        negateBitsTC(number2);
+        negateBits(number2);
         vectorAdd(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
     } else if(number1._number[0] > 127 && number2._number[0] > 127){
-        negateBitsTC(number1);
-        negateBitsTC(number2);
+        negateBits(number1);
+        negateBits(number2);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
         vectorSub(&newTC._number[index1], &number1._number[0], number1._number.size()-1);
     } else {
@@ -479,15 +456,15 @@ TC TC::add(TC number1, TC number2){
     vector<uint8_t> newNumber(number1._number.size() + number2._number.size());
     bool negate = false;
     if(number1._number[0] > 127 && number2._number[0] > 127){
-        negateBitsTC(number1);
-        negateBitsTC(number2);
+        negateBits(number1);
+        negateBits(number2);
     }
     else if (number1._number[0] > 127 && number2._number[0] < 127){
-        negateBitsTC(number1);
+        negateBits(number1);
         negate = true;
     }
     else if (number1._number[0] < 127 && number2._number[0] > 127){
-        negateBitsTC(number2);
+        negateBits(number2);
         negate = true;
     } 
     clock_t start_time = clock();
@@ -514,16 +491,17 @@ TC TC::add(TC number1, TC number2){
     TC newTC(newNumber, 0);
     
     if(negate){
-        negateBitsTC(newTC);
+        negateBits(newTC);
     }
     newTC._position = leastSignificant - (8 * comma);
     return  newTC;
 }
 
+
 TC TC::div(TC number1, TC number2) {
         clock_t start_time_global = clock();
 
-    TC copyNumber1 = number1;
+    TC copyNumber1 = number1;    
     if((isNumberZero(number1) && isNumberZero(number2)) || (isNumberZero(number1))){
         vector<uint8_t> zero = {0};
         return TC(zero, 0);
@@ -564,15 +542,15 @@ TC TC::div(TC number1, TC number2) {
         }
     }
     if(number1._number[0] > 127 && number2._number[0] > 127){
-        negateBitsTC(number1);
-        negateBitsTC(number2);
+        negateBits(number1);
+        negateBits(number2);
     }
     else if (number1._number[0] > 127 && number2._number[0] < 127){
-        negateBitsTC(number1);
+        negateBits(number1);
         negate = true;
     }
     else if (number1._number[0] < 127 && number2._number[0] > 127){
-        negateBitsTC(number2);
+        negateBits(number2);
         negate = true;
     } 
 
@@ -589,11 +567,12 @@ TC TC::div(TC number1, TC number2) {
 
     unsigned int loop = number1._number.size() - number2._number.size();
     vector<uint8_t> numberA(number1._number.begin(), number1._number.begin() + number2._number.size());
-    vector<uint8_t> loopResult(number2._number.size()); //tu wynik odejmowania/dodawania
-    vector<uint8_t> result(number1._number.size()); //tu wymik
+    vector<uint8_t> loopResult(number2._number.size()); 
+    vector<uint8_t> result(number1._number.size()); 
     TC numberB(numberA, number1._position);
     TC loopResultB(loopResult, number1._position);
     unsigned int size = number2._number.size();
+
 
     clock_t start_time = clock();
 
@@ -636,13 +615,16 @@ TC TC::div(TC number1, TC number2) {
     TC newTC(result, 0); 
 
     if(negate){
-        negateBitsTC(newTC);
-        negateBitsTC(copyNumber1);
+        negateBits(newTC);
     }
+    
     TC mulResult = mul(newTC, number2);
+    
+    if((mulResult._number[0] > 127 && copyNumber1._number[0] < 128) ||(mulResult._number[0] < 128 && copyNumber1._number[0] > 127)){
+        negateBits(mulResult);
+    }
     shorterString(mulResult);
     shorterString(copyNumber1);
-    
     if(!(mulResult == copyNumber1)){
         uint8_t zero = 0;
         result.push_back(0);
@@ -668,7 +650,7 @@ TC TC::div(TC number1, TC number2) {
          int position = leastSignificant - (8 * comma) - 8;
          TC newTC2(result, 0);
          if(negate){
-         negateBitsTC(newTC2);
+         negateBits(newTC2);
          }  
          newTC2._position = leastSignificant - (8 * comma) - 8;
          return newTC2;  
@@ -762,5 +744,3 @@ void TC::shiftDiv(std::vector<uint8_t>& vec, uint8_t& value) {
     vec[vec.size() - 1] += carry;
 
 }
-
-

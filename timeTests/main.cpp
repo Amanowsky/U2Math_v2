@@ -1,7 +1,7 @@
 #include <iostream>
 #include "TC.h"
 
-#define RESEARCH 100
+#define RESEARCH 1
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
     unsigned int sizeKb;
     std::cin >> sizeKb;
 
-    for (int i = 0; i < sizeKb * 1024 * 1024 ; i += 8)
+    for (int i = 0; i < sizeKb * 1024 * 1024; i += 8)
     {
         vec.push_back((rand() % 255) + 1);
     }
@@ -36,8 +36,9 @@ int main()
 
     for (int i = 0; i < RESEARCH; i++)
     {
-        TC::add(testVector,testVector);
+        TC::mul(testVector,testVector2);
     }
+
 
 
 

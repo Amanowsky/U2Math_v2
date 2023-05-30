@@ -1,9 +1,12 @@
 #ifndef TC_H_
 #define TC_H_
-#include<iostream>
+#include <iostream>
 #include <algorithm>
 #include <string> 
-#include<vector>
+#include <vector>
+#include <cstdlib>
+#include <time.h>
+#include <fstream>
 
 extern "C" void vectorAdd(uint8_t * a, uint8_t * b, unsigned int c);
 extern "C" void vectorSub(uint8_t * a, uint8_t * b, unsigned int c);
@@ -18,7 +21,8 @@ private:
     int _position;
     static void setNegative(uint8_t& byt, int n);
     static void printVector(const vector<uint8_t>& number);
-
+    static uint8_t rightShift(const uint8_t& number, int n);
+    static uint8_t leftShift(const uint8_t& number, int n);
 public:
 
     TC();
@@ -26,11 +30,9 @@ public:
     static vector<uint8_t> getNumber(TC number);
     static bool isNumberZero(TC number);
     static bool isNumberZero(vector<uint8_t> number);
-    static uint8_t rightShift(const uint8_t& number, int n);
-    static uint8_t leftShift(const uint8_t& number, int n);
     static std::string printTC(TC number);
     static void negateBits(vector<uint8_t>& number);
-    static void negateBitsTC(TC& number);
+    static void negateBits(TC& number);
     static TC add(TC number1, TC number2);
     static TC sub(TC number1, TC number2);
     static TC mul(TC number1, TC number2);
