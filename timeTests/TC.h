@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string> 
 #include <vector>
+#include <time.h>
+#include <fstream>
+#include <cstdlib>
 
 extern "C" void vectorAdd(uint8_t * a, uint8_t * b, unsigned int c);
 extern "C" void vectorSub(uint8_t * a, uint8_t * b, unsigned int c);

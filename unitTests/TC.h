@@ -1,12 +1,8 @@
 #ifndef TC_H_
 #define TC_H_
 #include <iostream>
-#include <algorithm>
 #include <string> 
 #include <vector>
-#include <cstdlib>
-#include <time.h>
-#include <fstream>
 
 extern "C" void vectorAdd(uint8_t * a, uint8_t * b, unsigned int c);
 extern "C" void vectorSub(uint8_t * a, uint8_t * b, unsigned int c);
@@ -42,7 +38,7 @@ public:
     static TC sub(TC number1, TC number2); //odejmowanie
     static TC mul(TC number1, TC number2); //mnozenie
     static TC div(TC number1, TC number2); //dzielenie
-    static void manipulateNumber(TC& number); //skraca liczbe o niepotrzebne 1 i 0
+    static void manipulateNumber(TC& number); ////skraca/rozszerza liczbę w zależności od potrzeb
     TC& operator=(const TC& other) { //operator przypisania
         _number = other._number;
         _position = other._position;

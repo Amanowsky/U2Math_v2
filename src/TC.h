@@ -37,7 +37,7 @@ public:
     static TC sub(TC number1, TC number2); //odejmowanie
     static TC mul(TC number1, TC number2); //mnozenie
     static TC div(TC number1, TC number2); //dzielenie
-    static void manipulateNumber(TC& number); //skraca liczbe o niepotrzebne 1 i 0
+    static void manipulateNumber(TC& number); //skraca/rozszerza liczbę w zależności od potrzeb
     TC& operator=(const TC& other) { //operator przypisania
         _number = other._number;
         _position = other._position;
