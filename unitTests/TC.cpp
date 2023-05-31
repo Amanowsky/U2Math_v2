@@ -46,6 +46,8 @@ TC::TC(vector<uint8_t>& number, int position) {
         _number = number;
         _position = position;
     }
+    if(!isNumberZero(*this))
+        shorterString(*this);
 }
 
 bool TC::isNumberZero(TC number){
@@ -223,54 +225,8 @@ int leastSignificant = number1._position < number2._position ? number1._position
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     bool numbsign1 = false;
     bool numbsign2 = false;
-    if(mostSignificantNumber1 > 0){
-        if(number1._number[0] > 127)
-            numbsign1 = true;
-    }
+    moveComma(number1, number2, comma, numbsign1, numbsign2);  
 
-    if(mostSignificantNumber2 > 0){
-        if(number2._number[0] > 127)
-            numbsign2 = true;
-
-    }
-    while (number1._position < 0 || number2._position < 0) {
-        if (number1._position < 0 && number2._position < 0) {
-                number1._position += 8;
-                number2._position += 8;
-                if(number1._position == 0){ 
-                    if(!numbsign1)
-                        number1._number.insert(number1._number.begin(), 0);
-
-
-                }
-                if(number2._position == 0){
-                   if(!numbsign2)
-                        number2._number.insert(number2._number.begin(), 0);
-
-                }
-                comma++;
-        }
-        else if (number1._position >= 0 && number2._position < 0) {
-                number1._number.push_back(0);
-                number2._position += 8;
-                if(number2._position == 0){
-                   if(!numbsign2)
-                        number2._number.insert(number2._number.begin(), 0);
-
-                }
-                comma++;
-        }
-        else if (number1._position < 0 && number2._position  >= 0) {
-                number2._number.push_back(0);
-                number1._position += 8;
-                if(number1._position == 0){
-                   if(!numbsign1)
-                        number1._number.insert(number1._number.begin(), 0);
-
-                }
-                comma++;
-        }
-    }
     mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     int mostSignificant =  mostSignificantNumber1 > mostSignificantNumber2 ?
@@ -329,56 +285,10 @@ int leastSignificant = number1._position < number2._position ? number1._position
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     bool numbsign1 = false;
     bool numbsign2 = false;
-    if(mostSignificantNumber1 > 0){
-        if(number1._number[0] > 127)
-            numbsign1 = true;
-    }
+    moveComma(number1, number2, comma, numbsign1, numbsign2);  
 
-    if(mostSignificantNumber2 > 0){
-        if(number2._number[0] > 127)
-            numbsign2 = true;
-
-    }
-    while (number1._position < 0 || number2._position < 0) {
-        if (number1._position < 0 && number2._position < 0) {
-                number1._position += 8;
-                number2._position += 8;
-                if(number1._position == 0){ 
-                    if(!numbsign1)
-                        number1._number.insert(number1._number.begin(), 0);
-
-
-                }
-                if(number2._position == 0){
-                   if(!numbsign2)
-                        number2._number.insert(number2._number.begin(), 0);
-
-                }
-                comma++;
-        }
-        else if (number1._position >= 0 && number2._position < 0) {
-                number1._number.push_back(0);
-                number2._position += 8;
-                if(number2._position == 0){
-                   if(!numbsign2)
-                        number2._number.insert(number2._number.begin(), 0);
-
-                }
-                comma++;
-        }
-        else if (number1._position < 0 && number2._position  >= 0) {
-                number2._number.push_back(0);
-                number1._position += 8;
-                if(number1._position == 0){
-                   if(!numbsign1)
-                        number1._number.insert(number1._number.begin(), 0);
-
-                }
-                comma++;
-        }
-    }
-     mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
-     mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     int mostSignificant =  mostSignificantNumber1 > mostSignificantNumber2 ?
                            mostSignificantNumber1 : mostSignificantNumber2; 
     int number3Size = ((mostSignificant - leastSignificant) + 9) / 8 ; 
@@ -431,61 +341,15 @@ int leastSignificant = number1._position < number2._position ? number1._position
         vector<uint8_t> zero = {0};
         return TC(zero, 0);
     }
-        
    int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
     unsigned int comma = 0;
     int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     bool numbsign1 = false;
     bool numbsign2 = false;
-    if(mostSignificantNumber1 > 0){
-        if(number1._number[0] > 127)
-            numbsign1 = true;
-    }
 
-    if(mostSignificantNumber2 > 0){
-        if(number2._number[0] > 127)
-            numbsign2 = true;
-
-    }
-    while (number1._position < 0 || number2._position < 0) {
-        if (number1._position < 0 && number2._position < 0) {
-                number1._position += 8;
-                number2._position += 8;
-                if(number1._position == 0){ 
-                    if(!numbsign1)
-                        number1._number.insert(number1._number.begin(), 0);
-
-
-                }
-                if(number2._position == 0){
-                   if(!numbsign2)
-                        number2._number.insert(number2._number.begin(), 0);
-
-                }
-                comma++;
-        }
-        else if (number1._position >= 0 && number2._position < 0) {
-                number1._number.push_back(0);
-                number2._position += 8;
-                if(number2._position == 0){
-                   if(!numbsign2)
-                        number2._number.insert(number2._number.begin(), 0);
-
-                }
-                comma++;
-        }
-        else if (number1._position < 0 && number2._position  >= 0) {
-                number2._number.push_back(0);
-                number1._position += 8;
-                if(number1._position == 0){
-                   if(!numbsign1)
-                        number1._number.insert(number1._number.begin(), 0);
-
-                }
-                comma++;
-        }
-    }
+    moveComma(number1, number2, comma, numbsign1, numbsign2);  
+    
     vector<uint8_t> newNumber(number1._number.size() + number2._number.size());
     bool negate = false;
     if(number1._number[0] > 127 && number2._number[0] > 127){
@@ -525,35 +389,13 @@ TC TC::div(TC number1, TC number2) {
     unsigned int comma = 0;
     bool negate = false;
     int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
-    while (number1._position < 0 || number2._position < 0) {
-        if (number1._position < 0 && number2._position < 0) {
-                number1._position += 8;
-                number2._position += 8;
-                if(number1._position == 0){ 
-                   number1._number.insert(number1._number.begin(), 0);
-                }
-                if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
-                }
-                comma++;
-        }
-        else if (number1._position >= 0 && number2._position < 0) {
-                number1._number.push_back(0);
-                number2._position += 8;
-                if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
-                }  
-                comma++;              
-        }
-        else if (number1._position < 0 && number2._position  >= 0) {
-                number2._number.push_back(0);
-                number1._position += 8;
-                if(number1._position == 0){
-                   number1._number.insert(number1._number.begin(), 0);
-                }
-                comma++;
-        }
-    }
+    
+    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    bool numbsign1 = false;
+    bool numbsign2 = false;
+    moveComma(number1, number2, comma, numbsign1, numbsign2);  
+
     if(number1._number[0] > 127 && number2._number[0] > 127){
         negateBits(number1);
         negateBits(number2);
@@ -567,8 +409,8 @@ TC TC::div(TC number1, TC number2) {
         negate = true;
     } 
 
-    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
-    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     while (mostSignificantNumber1 <= mostSignificantNumber2)
     {
         if (number1._number[0] > 127)
@@ -671,6 +513,60 @@ TC TC::div(TC number1, TC number2) {
 
 }
 
+void TC::moveComma(TC& number1, TC&number2, unsigned int& comma, bool& numbsign1, bool& numbsign2){
+
+    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    if(mostSignificantNumber1 > 0){
+        if(number1._number[0] > 127)
+            numbsign1 = true;
+    }
+
+    if(mostSignificantNumber2 > 0){
+        if(number2._number[0] > 127)
+            numbsign2 = true;
+
+    }
+    while (number1._position < 0 || number2._position < 0) {
+        if (number1._position < 0 && number2._position < 0) {
+                number1._position += 8;
+                number2._position += 8;
+                if(number1._position == 0){ 
+                    if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
+
+                }
+                if(number2._position == 0){
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
+                }
+                comma++;
+        }
+        else if (number1._position >= 0 && number2._position < 0) {
+                number1._number.push_back(0);
+                number2._position += 8;
+                if(number2._position == 0){
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
+                }
+                comma++;
+        }
+        else if (number1._position < 0 && number2._position  >= 0) {
+                number2._number.push_back(0);
+                number1._position += 8;
+                if(number1._position == 0){
+                   if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
+                }
+                comma++;
+        }
+    }
+}
+
 void TC::shorterString(TC& number){
     int i = 1;
     while(number._position < 0 && number._number.size() > 1){
@@ -683,7 +579,7 @@ void TC::shorterString(TC& number){
     }
 
     while((number._position + number._number.size() * 8) > 8 && number._number.size() > 1){
-         if(number._number[i] > 127 && number._number[0] > 127){
+         if(number._number[i] > 127 && number._number[0] == 127){
             number._number.erase(number._number.begin());
             continue;
         } else if(number._number[i] < 128 && number._number[0] == 0) {
@@ -693,7 +589,12 @@ void TC::shorterString(TC& number){
         break;
     }
 
+    if((number._position + number._number.size() * 8) == 8 && number._number.size() > 1){
+         if(number._number[0] == 0 ){
+            number._number.erase(number._number.begin());
+    }
     
+    }
 }
 
 void TC::printVector(const vector<uint8_t>&  number){
@@ -761,10 +662,11 @@ void TC_test::setAutoTest()
     TCnumber_ab = TC(number_ab, 0);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '+', "add 2");
 
+
     // Add test 3
     number_a = {0b11111111, 0b00111000}; // -200
     number_b = {0b11111111, 0b10001000}; // -120
-    number_ab = {0b11000000}; // -64
+    number_ab = {0b11111110, 0b11000000}; // -64
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, 0);
     TCnumber_ab = TC(number_ab, 0);
@@ -772,10 +674,10 @@ void TC_test::setAutoTest()
 
     // Add test 4
     number_a = {0b00000101}; // 2,5
-    number_b = {0b00000100}; // 2
+    number_b = {0b00000010}; // 2
     number_ab = {0b00001001}; // 4,5
     TCnumber_a = TC(number_a, -1);
-    TCnumber_b = TC(number_b, -1);
+    TCnumber_b = TC(number_b, 0);
     TCnumber_ab = TC(number_ab, -1);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '+', "add 4");
 
@@ -827,7 +729,7 @@ void TC_test::setAutoTest()
     // Sub test 2
     number_a = {0b11111101, 0b11100010}; // -542
     number_b = {0b11110110}; // -10
-    number_ab = {0b11101100}; // -532
+    number_ab = {0b11111101, 0b11101100}; // -532
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, 0);
     TCnumber_ab = TC(number_ab, 0);
@@ -836,7 +738,7 @@ void TC_test::setAutoTest()
     // Sub test 3
     number_a = {0b00001000, 0b10010110, 0b10011110}; // 562846
     number_b = {0b00001000, 0b11000010, 0b10101100}; // 574124
-    number_ab = {0b11110010}; // -11278
+    number_ab = {0b11111111, 0b11010011, 0b11110010}; // -11278
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, 0);
     TCnumber_ab = TC(number_ab, 0);
@@ -909,43 +811,45 @@ void TC_test::setAutoTest()
     // Mul test 2
     number_a = {0b11100101, 0b11100101, 0b11001010}; // -1710646
     number_b = {0b00000000, 0b00000000, 0b00000000}; // 0
-    number_ab = {0b00000000, 0b00000000, 0b00000000}; // 0
+    number_ab = {0b00000000}; // 0
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, 0);
     TCnumber_ab = TC(number_ab, 0);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 3");
 
     // Mul test 3
-    number_a = {0b00000000, 0b11001000}; // 0
-    number_b = {0b11111111, 0b11111110};
-    number_ab = {0b11111110, 0b01110000};
+    number_a = {0b00000000, 0b11001000}; // 200
+    number_b = {0b11111111, 0b11111110}; //-2
+    number_ab = {0b11111110, 0b01110000}; //-400
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, 0);
     TCnumber_ab = TC(number_ab, 0);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 4");
 
     // Mul test 4
-    number_a = {0b10101010, 0b10111001, 0b10010011, 0b10001001, 0b00000101}; 
-    number_b = {0b10001001, 0b00000101, 0b10001001};
-    number_ab = {0b00100111,0b10100001,0b11100100,0b01101000,0b10000000,0b01001110,0b01101100,0b10101101};
+    number_a = {0b10101010, 0b10111001, 0b10010011, 0b10001001, 0b00000101}; //-366253733627
+    number_b = {0b10001001, 0b00000101, 0b10001001}; //-7797367
+    number_ab = {0b00100111,0b10100001,0b11100100,0b01101000,0b10000000,0b01001110,0b01101100,0b10101101}; //2855814776209960109
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, 0);
+
+
     TCnumber_ab = TC(number_ab, 0);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 4");
 
     // Mul test 5
-    number_a = {0b11111111};
-    number_b = {0b00000001}; 
-    number_ab = {0b11111111,0b10000000};
+    number_a = {0b11111111};//-1
+    number_b = {0b00000001}; //0.5
+    number_ab = {0b11111111,0b10000000}; //-1.5
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -1);
     TCnumber_ab = TC(number_ab, -8);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 5");
 
     // Mul test 6
-    number_a = {0b11111111,0b00000001};
-    number_b = {0b00000000};
-    number_ab = {0b00000000};
+    number_a = {0b11111111,0b10000000}; //-1.5
+    number_b = {0b00000000}; //0
+    number_ab = {0b00000000}; //0
     TCnumber_a = TC(number_a, -8);
     TCnumber_b = TC(number_b, -1);
     TCnumber_ab = TC(number_ab, 0);

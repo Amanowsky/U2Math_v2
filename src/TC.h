@@ -23,6 +23,8 @@ private:
     static void printVector(const vector<uint8_t>& number); //wypisywanie vectora
     static uint8_t rightShift(const uint8_t& number, int n); //przesuniecie w prawo
     static uint8_t leftShift(const uint8_t& number, int n); //przesuniecie w lewo
+    static void moveComma(TC& number1, TC&number2, unsigned int& comma, bool& numbsign1, bool& numbsign2); //funkcja pozbywajaca sie przecinka
+
 public:
 
     TC(); //konstruktor domyślny
@@ -55,5 +57,9 @@ public:
     }
 
 };
+
+
+
+
 
 #endif
