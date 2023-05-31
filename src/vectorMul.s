@@ -25,8 +25,6 @@ mul:
     adcb %al, (%edx, %esi)
     dec %esi
     adcb %ah, (%edx, %esi)
-    movl %edi, %esi
-    add %ebp, %esi
     dec %edi
     jns mul
 
