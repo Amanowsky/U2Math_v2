@@ -217,18 +217,36 @@ if(mostSignificant > 0){
 }
 }
 TC TC::add(TC number1, TC number2){
-
-    int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
+int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
     unsigned int comma = 0;
+    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    bool numbsign1 = false;
+    bool numbsign2 = false;
+    if(mostSignificantNumber1 > 0){
+        if(number1._number[0] > 127)
+            numbsign1 = true;
+    }
+
+    if(mostSignificantNumber2 > 0){
+        if(number2._number[0] > 127)
+            numbsign2 = true;
+
+    }
     while (number1._position < 0 || number2._position < 0) {
         if (number1._position < 0 && number2._position < 0) {
                 number1._position += 8;
                 number2._position += 8;
                 if(number1._position == 0){ 
-                   number1._number.insert(number1._number.begin(), 0);
+                    if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
+
                 }
                 if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
                 }
                 comma++;
         }
@@ -236,21 +254,25 @@ TC TC::add(TC number1, TC number2){
                 number1._number.push_back(0);
                 number2._position += 8;
                 if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
-                }  
-                comma++;              
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
+                }
+                comma++;
         }
         else if (number1._position < 0 && number2._position  >= 0) {
                 number2._number.push_back(0);
                 number1._position += 8;
                 if(number1._position == 0){
-                   number1._number.insert(number1._number.begin(), 0);
+                   if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
                 }
                 comma++;
         }
     }
-    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
-    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     int mostSignificant =  mostSignificantNumber1 > mostSignificantNumber2 ?
                            mostSignificantNumber1 : mostSignificantNumber2;
     int number3Size = ((mostSignificant - leastSignificant) + 9) / 8 ; 
@@ -303,15 +325,34 @@ TC TC::add(TC number1, TC number2){
    
     int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
     unsigned int comma = 0;
+    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    bool numbsign1 = false;
+    bool numbsign2 = false;
+    if(mostSignificantNumber1 > 0){
+        if(number1._number[0] > 127)
+            numbsign1 = true;
+    }
+
+    if(mostSignificantNumber2 > 0){
+        if(number2._number[0] > 127)
+            numbsign2 = true;
+
+    }
     while (number1._position < 0 || number2._position < 0) {
         if (number1._position < 0 && number2._position < 0) {
                 number1._position += 8;
                 number2._position += 8;
                 if(number1._position == 0){ 
-                   number1._number.insert(number1._number.begin(), 0);
+                    if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
+
                 }
                 if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
                 }
                 comma++;
         }
@@ -319,21 +360,25 @@ TC TC::add(TC number1, TC number2){
                 number1._number.push_back(0);
                 number2._position += 8;
                 if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
-                }  
-                comma++;              
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
+                }
+                comma++;
         }
         else if (number1._position < 0 && number2._position  >= 0) {
                 number2._number.push_back(0);
                 number1._position += 8;
                 if(number1._position == 0){
-                   number1._number.insert(number1._number.begin(), 0);
+                   if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
                 }
                 comma++;
         }
     }
-    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
-    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+     mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+     mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     int mostSignificant =  mostSignificantNumber1 > mostSignificantNumber2 ?
                            mostSignificantNumber1 : mostSignificantNumber2; 
     int number3Size = ((mostSignificant - leastSignificant) + 9) / 8 ; 
@@ -387,17 +432,36 @@ TC TC::add(TC number1, TC number2){
         return TC(zero, 0);
     }
         
-   unsigned int comma = 0;
-    int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
+   int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
+    unsigned int comma = 0;
+    int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
+    int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    bool numbsign1 = false;
+    bool numbsign2 = false;
+    if(mostSignificantNumber1 > 0){
+        if(number1._number[0] > 127)
+            numbsign1 = true;
+    }
+
+    if(mostSignificantNumber2 > 0){
+        if(number2._number[0] > 127)
+            numbsign2 = true;
+
+    }
     while (number1._position < 0 || number2._position < 0) {
         if (number1._position < 0 && number2._position < 0) {
                 number1._position += 8;
                 number2._position += 8;
                 if(number1._position == 0){ 
-                   number1._number.insert(number1._number.begin(), 0);
+                    if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
+
                 }
                 if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
                 }
                 comma++;
         }
@@ -405,15 +469,19 @@ TC TC::add(TC number1, TC number2){
                 number1._number.push_back(0);
                 number2._position += 8;
                 if(number2._position == 0){
-                   number2._number.insert(number2._number.begin(), 0); 
-                }  
-                comma++;              
+                   if(!numbsign2)
+                        number2._number.insert(number2._number.begin(), 0);
+
+                }
+                comma++;
         }
         else if (number1._position < 0 && number2._position  >= 0) {
                 number2._number.push_back(0);
                 number1._position += 8;
                 if(number1._position == 0){
-                   number1._number.insert(number1._number.begin(), 0);
+                   if(!numbsign1)
+                        number1._number.insert(number1._number.begin(), 0);
+
                 }
                 comma++;
         }
@@ -605,7 +673,16 @@ TC TC::div(TC number1, TC number2) {
 
 void TC::shorterString(TC& number){
     int i = 1;
-    while((number._position + number._number.size() * 8) > 0 && number._number.size() > 1){
+    while(number._position < 0 && number._number.size() > 1){
+         if(number._number[number._number.size() - 1] == 0){
+            number._number.pop_back();
+            number._position += 8;
+            continue;
+         }
+        break;
+    }
+
+    while((number._position + number._number.size() * 8) > 8 && number._number.size() > 1){
          if(number._number[i] > 127 && number._number[0] > 127){
             number._number.erase(number._number.begin());
             continue;
@@ -616,14 +693,7 @@ void TC::shorterString(TC& number){
         break;
     }
 
-    while(number._position < 0 && number._number.size() > 1){
-         if(number._number[number._number.size() - 1] == 0){
-            number._number.pop_back();
-            number._position += 8;
-            continue;
-         }
-        break;
-    }
+    
 }
 
 void TC::printVector(const vector<uint8_t>&  number){
