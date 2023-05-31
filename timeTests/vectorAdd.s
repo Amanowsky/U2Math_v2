@@ -5,10 +5,10 @@ vectorAdd:
   pushl %ecx
   pushl %edx
   pushl %edi
+  clc 
   movl 8(%ebp), %ecx      
   movl 12(%ebp), %ebx     
-  movl 16(%ebp), %edi
-  clc                   
+  movl 16(%ebp), %edi                 
 vector_add:
   movb (%ebx,%edi), %al  
   adc %al, (%ecx,%edi)   

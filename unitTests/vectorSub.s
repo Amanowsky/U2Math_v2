@@ -4,11 +4,11 @@ vectorSub:
   movl %esp, %ebp
   pushl %ecx
   pushl %edx
-  pushl %edi      
+  pushl %edi
+  clc       
   movl 8(%ebp), %ecx      
   movl 12(%ebp), %edx    
-  movl 16(%ebp), %edi  
-  clc        
+  movl 16(%ebp), %edi      
 vector_sub:
   movb (%edx,%edi), %al   
   sbb %al, (%ecx,%edi)    

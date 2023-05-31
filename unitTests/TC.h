@@ -23,7 +23,10 @@ private:
     static void printVector(const vector<uint8_t>& number); //wypisywanie vectora
     static uint8_t rightShift(const uint8_t& number, int n); //przesuniecie w prawo
     static uint8_t leftShift(const uint8_t& number, int n); //przesuniecie w lewo
-    static void moveComma(TC& number1, TC&number2, unsigned int& comma, bool& numbsign1, bool& numbsign2); //funkcja pozbywajaca sie przecinka
+    static void moveComma(TC& number1, TC&number2, unsigned int& comma); //przesuniecie przecinka
+    static void shiftDiv(vector<uint8_t>& a, uint8_t& b); //przesuniecie liczby do dzielenia
+    static void changeIndex(int& a); //zmienia pozycje
+
 
 public:
 
@@ -39,10 +42,7 @@ public:
     static TC sub(TC number1, TC number2); //odejmowanie
     static TC mul(TC number1, TC number2); //mnozenie
     static TC div(TC number1, TC number2); //dzielenie
-    static void changeIndex(int& a, int& b); //zmienia pozycje
-    static void changeIndex2(int& a); //zmienia pozycje
-    static void shorterString(TC& number); //skraca liczbe o niepotrzebne 1 i 0
-    static void shiftDiv(vector<uint8_t>& a, uint8_t& b); //przesuniecie liczby do dzielenia
+    static void manipulateNumber(TC& number); //skraca liczbe o niepotrzebne 1 i 0
     TC& operator=(const TC& other) { //operator przypisania
         _number = other._number;
         _position = other._position;
@@ -58,13 +58,12 @@ public:
 
 };
 
+
 class TC_test{
     public: 
     static void isPassed(TC,TC,TC,char,std::string); // Sprawdza czy test przeszedł pomyślnie
     static void setAutoTest();  // Włącza serie testów
     static void manualTest(TC,TC,char,TC); // Pozwala napisać własny test w main
 };
-
-
 
 #endif

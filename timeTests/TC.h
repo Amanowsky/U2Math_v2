@@ -1,12 +1,8 @@
 #ifndef TC_H_
 #define TC_H_
 #include <iostream>
-#include <algorithm>
 #include <string> 
 #include <vector>
-#include <cstdlib>
-#include <time.h>
-#include <fstream>
 
 extern "C" void vectorAdd(uint8_t * a, uint8_t * b, unsigned int c);
 extern "C" void vectorSub(uint8_t * a, uint8_t * b, unsigned int c);

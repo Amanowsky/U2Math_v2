@@ -38,7 +38,7 @@ TC::TC(vector<uint8_t>& number, int position) {
             shiftNumber.erase(shiftNumber.begin());
         else if(shiftNumber[0] == 255 && shiftNumber[1] > 127)
             shiftNumber.erase(shiftNumber.begin());
-        changeIndex2(position);
+        changeIndex(position);
         _number = shiftNumber;
         _position = position;
     }
@@ -47,7 +47,7 @@ TC::TC(vector<uint8_t>& number, int position) {
         _position = position;
     }
     if(!isNumberZero(*this))
-        shorterString(*this);
+        manipulateNumber(*this);
 }
 
 bool TC::isNumberZero(TC number){
@@ -115,6 +115,7 @@ void TC::setNegative(uint8_t& number, int n)
 
 std::string TC::printTC(TC number) 
 {
+    manipulateNumber(number);
     std::string numb = "";
     int mostSignificant = (number._position + number._number.size() * 8);
     if (number._position == 0) { 
@@ -201,8 +202,8 @@ void TC::negateBits(vector<uint8_t>& number){
 }
 
 void TC::negateBits(TC& number){
-int mostSignificant = number._position - 1 + (number._number.size() * 8);  
-if(mostSignificant > 0){
+    int mostSignificant = number._position - 1 + (number._number.size() * 8);  
+    if(mostSignificant > 0){
         unsigned int size = number._number.size() - 1;
         int tempPos = number._position;
         uint8_t one = 1;
@@ -219,19 +220,35 @@ if(mostSignificant > 0){
 }
 }
 TC TC::add(TC number1, TC number2){
-int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
+    int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
     unsigned int comma = 0;
     int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
-    bool numbsign1 = false;
-    bool numbsign2 = false;
-    moveComma(number1, number2, comma, numbsign1, numbsign2);  
+    moveComma(number1, number2, comma);   //przesuwamy obie liczby aby były bez przecinka
 
     mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    
     int mostSignificant =  mostSignificantNumber1 > mostSignificantNumber2 ?
                            mostSignificantNumber1 : mostSignificantNumber2;
-    int number3Size = ((mostSignificant - leastSignificant) + 9) / 8 ; 
+    while(mostSignificantNumber1 > mostSignificantNumber2){ //rozszerzamy jedna liczb aby pozycja najbardziej znaczacego bitu byla identyczna (potrzebne do działań)
+        if(number2._number[0] > 127){
+            number2._number.insert(number2._number.begin(), 255);
+        } else {
+            number2._number.insert(number2._number.begin(), 0);
+        }
+        mostSignificantNumber2 += 8;
+    }
+    while(mostSignificantNumber2 > mostSignificantNumber1){
+        if(number1._number[0] > 127){
+            number1._number.insert(number1._number.begin(), 255);
+        } else {
+            number1._number.insert(number1._number.begin(), 0);
+        }
+        mostSignificantNumber1 += 8;
+    }
+
+    int number3Size = ((mostSignificant - leastSignificant) + 9) / 8 ; //rozmiar wyniku 1 większy w razie przeniesienia
     vector<uint8_t> newNumber(number3Size);
     TC newTC(newNumber, 0);
     int tempLS = mostSignificant;
@@ -246,7 +263,7 @@ int leastSignificant = number1._position < number2._position ? number1._position
         tempLS -= 8;
         index2++;
     }
-    if (number1._number[0] > 127 && number2._number[0] < 127 && mostSignificantNumber1 >= 0) {
+    if (number1._number[0] > 127 && number2._number[0] < 127 ) { // działania zależności od znaków
         negateBits(number1);
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
         vectorSub(&newTC._number[index1], &number1._number[0], number1._number.size()-1);        
@@ -265,32 +282,49 @@ int leastSignificant = number1._position < number2._position ? number1._position
         vectorAdd(&newTC._number[index2], &number2._number[0], number2._number.size()-1);
     } 
 
-    if(newTC._number[1] > 127 && newTC._number[0] > 127){
+    if(newTC._number[1] > 127 && newTC._number[0] > 127){ //potencjalne usunięcie tego co dodaliśmy w razie przeniesienia
             newTC._number.erase(newTC._number.begin());
     } else if(newTC._number[1] < 128 && newTC._number[0] == 0) {
             newTC._number.erase(newTC._number.begin());
     } else if(isNumberZero(number1) && number2._number[0] < 127){
         newTC._number.erase(newTC._number.begin());
     }
-    newTC._position = leastSignificant - (comma * 8);
+    newTC._position = leastSignificant - (comma * 8); //pozycja + odjęcie potencjalne jak pozbywaliśmy się przecinka dla obliczeń   
     return newTC; 
 }
     
 
  TC TC::sub(TC number1, TC number2){
    
-    int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
+    int leastSignificant = number1._position < number2._position ? number1._position : number2._position; //analogicznie do dodawania
     unsigned int comma = 0;
     int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
-    bool numbsign1 = false;
-    bool numbsign2 = false;
-    moveComma(number1, number2, comma, numbsign1, numbsign2);  
+
+    moveComma(number1, number2, comma);  
 
     mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
     int mostSignificant =  mostSignificantNumber1 > mostSignificantNumber2 ?
                            mostSignificantNumber1 : mostSignificantNumber2; 
+    
+    while(mostSignificantNumber1 > mostSignificantNumber2){
+        if(number2._number[0] > 127){
+            number2._number.insert(number2._number.begin(), 255);
+        } else {
+            number2._number.insert(number2._number.begin(), 0);
+        }
+        mostSignificantNumber2 += 8;
+    }
+    
+    while(mostSignificantNumber2 > mostSignificantNumber1){
+        if(number1._number[0] > 127){
+            number1._number.insert(number1._number.begin(), 255);
+        } else {
+            number1._number.insert(number1._number.begin(), 0);
+        }
+        mostSignificantNumber1 += 8;
+    }
     int number3Size = ((mostSignificant - leastSignificant) + 9) / 8 ; 
     vector<uint8_t> newNumber(number3Size);
     TC newTC(newNumber, 0);
@@ -337,22 +371,21 @@ int leastSignificant = number1._position < number2._position ? number1._position
 
  TC TC::mul(TC number1, TC number2){
 
-    if(isNumberZero(number1) || isNumberZero(number2)){
+     if(isNumberZero(number1) || isNumberZero(number2)){ //jeśli któraś z liczb jest 0 to nasz wynik będzie 0
         vector<uint8_t> zero = {0};
         return TC(zero, 0);
-    }
-   int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
+     }
+    int leastSignificant = number1._position < number2._position ? number1._position : number2._position;
     unsigned int comma = 0;
     int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
-    bool numbsign1 = false;
-    bool numbsign2 = false;
+  
 
-    moveComma(number1, number2, comma, numbsign1, numbsign2);  
+    moveComma(number1, number2, comma);  //jak w dodawaniu i odejmowaniu
     
     vector<uint8_t> newNumber(number1._number.size() + number2._number.size());
     bool negate = false;
-    if(number1._number[0] > 127 && number2._number[0] > 127){
+    if(number1._number[0] > 127 && number2._number[0] > 127){ //zmiana znaków na dodatnie do obliczeń i zapisanie w wypadku gdy znaki dwóch liczb były różne
         negateBits(number1);
         negateBits(number2);
     }
@@ -366,17 +399,18 @@ int leastSignificant = number1._position < number2._position ? number1._position
     } 
 
     for (int i = number2._number.size() - 1; i >= 0; i--) {
-       vectorMul(&number1._number[0], &number2._number[i], &newNumber[0], number1._number.size(), i);
+       vectorMul(&number1._number[0], &number2._number[i], &newNumber[0], number1._number.size(), i); //obliczanie kolejnych iloczynów częściowych
     }
     TC newTC(newNumber, 0);
     
     if(negate){
-        negateBits(newTC);
+        negateBits(newTC); //powrót na ujemnych jeśli znaki były różne
     }
     newTC._position = leastSignificant - (8 * comma);
     return  newTC;
 }
 
+//Działa na liczbach podzielnych i nie zawsze na niepodzielnych, na pozycjach różnych od 0 całkowicie nie działa
 TC TC::div(TC number1, TC number2) {
     TC copyNumber1 = number1;    
     if((isNumberZero(number1) && isNumberZero(number2)) || (isNumberZero(number1))){
@@ -392,9 +426,8 @@ TC TC::div(TC number1, TC number2) {
     
     int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
-    bool numbsign1 = false;
-    bool numbsign2 = false;
-    moveComma(number1, number2, comma, numbsign1, numbsign2);  
+   
+    moveComma(number1, number2, comma);  
 
     if(number1._number[0] > 127 && number2._number[0] > 127){
         negateBits(number1);
@@ -411,7 +444,7 @@ TC TC::div(TC number1, TC number2) {
 
     mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
-    while (mostSignificantNumber1 <= mostSignificantNumber2)
+    while (mostSignificantNumber1 <= mostSignificantNumber2) //rozszerzamy liczbe
     {
         if (number1._number[0] > 127)
             number1._number.insert(number1._number.begin(), 255);
@@ -420,15 +453,14 @@ TC TC::div(TC number1, TC number2) {
         mostSignificantNumber1 += 8;
     }
 
-    unsigned int loop = number1._number.size() - number2._number.size();
-    vector<uint8_t> numberA(number1._number.begin(), number1._number.begin() + number2._number.size());
-    vector<uint8_t> loopResult(number2._number.size()); 
+    unsigned int loop = number1._number.size() - number2._number.size(); //wyliczamy ile razy ma sie wykonywac petla
+    vector<uint8_t> numberA(number1._number.begin(), number1._number.begin() + number2._number.size()); //zapisujemy czesc liczby 1
     vector<uint8_t> result(number1._number.size()); 
-    TC numberB(numberA, number1._position);
-    TC loopResultB(loopResult, number1._position);
+    TC numberB(numberA, number1._position); 
+  
     unsigned int size = number2._number.size();
 
-    if ((numberA[0] > 127 && number2._number[0] > 127) || (numberA[0] < 128 && number2._number[0] < 128)) {
+    if ((numberA[0] > 127 && number2._number[0] > 127) || (numberA[0] < 128 && number2._number[0] < 128)) { //rozpoczynamy algorytm
         numberB = sub(numberB, number2);
     }
     else {
@@ -443,9 +475,9 @@ TC TC::div(TC number1, TC number2) {
     }
     
     bool negateNumberA = false;
-    for(int i = 0; i < loop; i++){
+    for(int i = 0; i < loop; i++){ //petla 
         for(int j = 0; j < 8; j++){
-            shiftDiv(numberB._number, number1._number[numberA.size() + i]);
+            shiftDiv(numberB._number, number1._number[numberA.size() + i]); //przesuwamy jeden bit w lewo
  
             if ((numberB._number[0] > 127 && number2._number[0] > 127) || (numberB._number[0] < 128 && number2._number[0] < 128)) {
                  numberB = sub(numberB, number2);
@@ -474,10 +506,10 @@ TC TC::div(TC number1, TC number2) {
     
     if((mulResult._number[0] > 127 && copyNumber1._number[0] < 128) ||(mulResult._number[0] < 128 && copyNumber1._number[0] > 127)){
         negateBits(mulResult);
-    }
-    shorterString(mulResult);
-    shorterString(copyNumber1);
-    if(!(mulResult == copyNumber1)){
+    } 
+    manipulateNumber(mulResult); //aby latwiej było porównać dwie liczby
+    manipulateNumber(copyNumber1);
+    if(!(mulResult == copyNumber1)){ //porównanie jeśli nieprawda to wykonujemy dodatkową pętle aby obliczyć przybliżoną wartość po przecinku
         uint8_t zero = 0;
         result.push_back(0);
         for(int i = loop; i < loop + 1; i++){
@@ -513,10 +545,12 @@ TC TC::div(TC number1, TC number2) {
 
 }
 
-void TC::moveComma(TC& number1, TC&number2, unsigned int& comma, bool& numbsign1, bool& numbsign2){
+void TC::moveComma(TC& number1, TC&number2, unsigned int& comma){
 
     int mostSignificantNumber1 = (number1._position - 1 + (number1._number.size() * 8));
     int mostSignificantNumber2 = (number2._position - 1 + (number2._number.size() * 8));
+    bool numbsign1 = false;
+    bool numbsign2 = false;
     if(mostSignificantNumber1 > 0){
         if(number1._number[0] > 127)
             numbsign1 = true;
@@ -567,7 +601,7 @@ void TC::moveComma(TC& number1, TC&number2, unsigned int& comma, bool& numbsign1
     }
 }
 
-void TC::shorterString(TC& number){
+void TC::manipulateNumber(TC& number){
     int i = 1;
     while(number._position < 0 && number._number.size() > 1){
          if(number._number[number._number.size() - 1] == 0){
@@ -593,7 +627,12 @@ void TC::shorterString(TC& number){
          if(number._number[0] == 0 ){
             number._number.erase(number._number.begin());
     }
-    
+    }
+     if(number._position  > 0){
+        while(number._position != 0){
+            number._number.push_back(0);
+            number._position -= 8;
+        }
     }
 }
 
@@ -605,21 +644,9 @@ void TC::printVector(const vector<uint8_t>&  number){
     }
 }
 
-void TC::changeIndex(int& a, int& b){
-    int modA = a % 8;
-    if(a < 0)
-        a = a - modA -1;
-    else
-        a = a + 7 - modA;
-       
-    int modB = b % 8;
-    if(b < 0)
-        b = b - modB -1;
-    else 
-        b = b + 7 - modB;
-}
 
-void TC::changeIndex2(int& a) {
+
+void TC::changeIndex(int& a) {
     int modA = a % 8;
     if (a > 0)
         a = a - modA;
@@ -640,6 +667,7 @@ void TC::shiftDiv(std::vector<uint8_t>& vec, uint8_t& value) {
     vec[vec.size() - 1] += carry;
 
 }
+
 void TC_test::setAutoTest()
 {
     std::cout << "---UnitTests autoSet---" << std::endl;
@@ -717,6 +745,14 @@ void TC_test::setAutoTest()
     TCnumber_ab = TC(number_ab, -8);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '+', "add 8");
 
+    // Add test 9
+    number_a = {0b00010010, 0b01010100}; // 5672279945631840087721377792
+    number_b = {0b11111111,0b10000000}; // -128
+    number_ab = {0b00010010, 0b01010011, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b10000000}; //5672279945631840087721377664
+    TCnumber_a = TC(number_a, 80);
+    TCnumber_b = TC(number_b, 0);
+    TCnumber_ab = TC(number_ab, 0);
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '+', "add 9");
     // Sub test 1
     number_a = {0b00000000}; // 0
     number_b = {0b00000000}; // 0
@@ -765,7 +801,7 @@ void TC_test::setAutoTest()
     // Sub test 6
     number_a = {0b00000001}; // 1
     number_b = {0b11111111,0b10000000}; // -0,5
-    number_ab = {0b00000001,0b10000000}; // 1,5 !!!
+    number_ab = {0b00000001,0b10000000}; // 1,5 
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -8);
     TCnumber_ab = TC(number_ab, -8);
@@ -774,7 +810,7 @@ void TC_test::setAutoTest()
     // sub test 7
     number_a = {0b11111111}; // -1
     number_b = {0b00000001}; // 0,5
-    number_ab = {0b11111110,0b10000000}; // -1,5 !!
+    number_ab = {0b11111110,0b10000000}; // -1,5 
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -1);
     TCnumber_ab = TC(number_ab, -8);
@@ -788,6 +824,15 @@ void TC_test::setAutoTest()
     TCnumber_b = TC(number_b, -8);
     TCnumber_ab = TC(number_ab, -8);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '-', "sub 8");
+
+    // Sub test 9
+    number_a = {0b00010010, 0b01010100}; // 5672279945631840087721377792
+    number_b = {0b11111111,0b10000000}; // -128
+    number_ab = {0b00010010, 0b01010100, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b10000000}; //5672279945631840087721377920
+    TCnumber_a = TC(number_a, 80);
+    TCnumber_b = TC(number_b, 0);
+    TCnumber_ab = TC(number_ab, 0);
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '-', "sub 9");
 
     // Mul test 1
     number_a = {0b00000000}; // 0
@@ -808,7 +853,7 @@ void TC_test::setAutoTest()
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 2");
 
 
-    // Mul test 2
+    // Mul test 3
     number_a = {0b11100101, 0b11100101, 0b11001010}; // -1710646
     number_b = {0b00000000, 0b00000000, 0b00000000}; // 0
     number_ab = {0b00000000}; // 0
@@ -817,7 +862,7 @@ void TC_test::setAutoTest()
     TCnumber_ab = TC(number_ab, 0);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 3");
 
-    // Mul test 3
+    // Mul test 4
     number_a = {0b00000000, 0b11001000}; // 200
     number_b = {0b11111111, 0b11111110}; //-2
     number_ab = {0b11111110, 0b01110000}; //-400
@@ -826,7 +871,7 @@ void TC_test::setAutoTest()
     TCnumber_ab = TC(number_ab, 0);
     isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 4");
 
-    // Mul test 4
+    // Mul test 5
     number_a = {0b10101010, 0b10111001, 0b10010011, 0b10001001, 0b00000101}; //-366253733627
     number_b = {0b10001001, 0b00000101, 0b10001001}; //-7797367
     number_ab = {0b00100111,0b10100001,0b11100100,0b01101000,0b10000000,0b01001110,0b01101100,0b10101101}; //2855814776209960109
@@ -835,61 +880,79 @@ void TC_test::setAutoTest()
 
 
     TCnumber_ab = TC(number_ab, 0);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 4");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 5");
 
-    // Mul test 5
+    // Mul test 6
     number_a = {0b11111111};//-1
     number_b = {0b00000001}; //0.5
     number_ab = {0b11111111,0b10000000}; //-1.5
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -1);
     TCnumber_ab = TC(number_ab, -8);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 5");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 6");
 
-    // Mul test 6
+    // Mul test 7
     number_a = {0b11111111,0b10000000}; //-1.5
     number_b = {0b00000000}; //0
     number_ab = {0b00000000}; //0
     TCnumber_a = TC(number_a, -8);
     TCnumber_b = TC(number_b, -1);
     TCnumber_ab = TC(number_ab, 0);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 6");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 7");
 
-    // Mul test 6
+    // Mul test 8
     number_a = {0b00000001}; // 1
     number_b = {0b00000001}; // 0,5
     number_ab = {0b00000001}; // 0,5
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -1);
     TCnumber_ab = TC(number_ab, -1);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 7");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 8");
 
-    // Mul test 7
+    // Mul test 9
     number_a = {0b00000001}; // 1
     number_b = {0b11111111,0b10000000}; // -0,5
     number_ab = {0b11111111,0b10000000}; // -0,5
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -8);
     TCnumber_ab = TC(number_ab, -8);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 8");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 9");
     
-    // Mul test 9
+    // Mul test 910
     number_a = {0b11111111}; // -1
     number_b = {0b10000000}; // 0,5
     number_ab = {0b11111111,0b10000000}; // -0,5
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -8);
     TCnumber_ab = TC(number_ab, -8);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 9");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 10");
 
-    // mul test 10
+    // mul test 11
     number_a = {0b11111111}; // -1
     number_b = {0b11111111,0b10000000}; // -0,5
     number_ab = {0b00000000, 0b10000000}; // 0,5
     TCnumber_a = TC(number_a, 0);
     TCnumber_b = TC(number_b, -8);
     TCnumber_ab = TC(number_ab, -8);
-    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 10");
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 11");
+
+ // mul test 12
+    number_a = {0b11111111}; // -1
+    number_b = {0b00000010}; // 33554432
+    number_ab = {0b11111110}; // -33554432
+    TCnumber_a = TC(number_a, 0);
+    TCnumber_b = TC(number_b, 24);
+    TCnumber_ab = TC(number_ab, 24);
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 12");
+
+// mul test 13
+    number_a = {0b01111000}; // 120
+    number_b = {0b00000010}; // 33554432
+    number_ab = {0b00000000, 0b11110000}; // 4026531840
+    TCnumber_a = TC(number_a, 0);
+    TCnumber_b = TC(number_b, 24);
+    TCnumber_ab = TC(number_ab, 24);
+    isPassed(TCnumber_a, TCnumber_b, TCnumber_ab, '*', "mul 13");
 
     // Div test 1
     number_a = {0b00001010}; // 10
@@ -926,6 +989,16 @@ void TC_test::setAutoTest()
     TCnumber_b = TC(number_b,-8);
     TCnumber_ab = TC(number_ab,0);
     isPassed(TCnumber_a,TCnumber_b,TCnumber_ab,'/',"div 4");
+
+    // Div test 5
+    number_a = {0b10011101}; // -99
+    number_b = {0b00100100}; // 36
+    number_ab = {0b11111101,0b01000000}; // -2.75
+    TCnumber_a = TC(number_a,0);
+    TCnumber_b = TC(number_b,0);
+    TCnumber_ab = TC(number_ab,-8);
+    isPassed(TCnumber_a,TCnumber_b,TCnumber_ab,'/',"div 5");
+
 }
 
 void TC_test::isPassed(TC a, TC b, TC c, char mark, std::string text)
@@ -935,7 +1008,7 @@ void TC_test::isPassed(TC a, TC b, TC c, char mark, std::string text)
     {
     case '+':
         result = TC::add(a,b);
-        TC::shorterString(result);
+        TC::manipulateNumber(result);
         if (result == c)
             std::cout << "Test " << text << " - Passed" << std::endl;
         else
@@ -943,7 +1016,7 @@ void TC_test::isPassed(TC a, TC b, TC c, char mark, std::string text)
         break;
     case '-':
         result = TC::sub(a,b);
-        TC::shorterString(result);
+        TC::manipulateNumber(result);
         if (result == c)
             std::cout << "Test " << text << " - Passed" << std::endl;
         else
@@ -951,7 +1024,7 @@ void TC_test::isPassed(TC a, TC b, TC c, char mark, std::string text)
         break;
     case '*':
         result = TC::mul(a,b);
-        TC::shorterString(result);
+        TC::manipulateNumber(result);
         if (result == c)
             std::cout << "Test " << text << " - Passed" << std::endl;
         else
@@ -959,7 +1032,7 @@ void TC_test::isPassed(TC a, TC b, TC c, char mark, std::string text)
         break;
     case '/':
         result = TC::div(a,b);
-        TC::shorterString(result);
+        TC::manipulateNumber(result);
         if (result == c)
             std::cout << "Test " << text << " - Passed" << std::endl;
         else
